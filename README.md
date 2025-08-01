@@ -82,10 +82,17 @@ The agent has four tools: `weatherForecast`, `activitySuggestions`, `clothingRec
 3. **Orchestrator Acts:** Executes `clothingRecommendations(weather: "Sunny", activity: "Outdoor walking or hiking")`.
 4. **Observation:** The tool returns clothing advice. This is added to memory.
 
-### Loop 4: Synthesizing the Final Answer
+### Loop 4: Getting Travel Advice
 
-1. **Orchestrator:** Sends the full context (query, weather, activities, clothing advice) to the model.
-2. **Model Reasons:** "I now have all the pieces to answer the user's original question. I do not need to call any more tools. I will synthesize this information into a final response."
+1. **Orchestrator:** Sends the current context, now including clothing advice, to the model.
+2. **Model Reasons:** "I have weather, an activity, and clothing. To be extra helpful, I should also provide travel advice based on the sunny weather. I will call the `travelAdvice` tool."
+3. **Orchestrator Acts:** Executes `travelAdvice(weather: "Sunny", location: "current location")`.
+4. **Observation:** The tool returns travel advice. This is added to memory.
+
+### Loop 5: Synthesizing the Final Answer
+
+1. **Orchestrator:** Sends the full context (query, weather, activities, clothing, and travel advice) to the model.
+2. **Model Reasons:** "I now have all the pieces to answer the user's original question comprehensively. I do not need to call any more tools. I will synthesize this information into a final response."
 3. **Orchestrator Acts:** Sees the model has provided a final answer and sends it to the user. The loop concludes.
 
 This step-by-step process, managed by the orchestrator, is the "thinking" of the agent.
@@ -103,6 +110,7 @@ The Akka SDK provides the agent orchestrator as a managed service. By using Akka
 - **Seamless Tool Integration:** Akka handles the mechanics of calling your tools and returning the results to the model.
 
 This allows you to focus on what makes your agent unique:
+
 - **Implementing the Tools:** Your core business logic.
 - **Defining the Agent's Goals:** Your system prompt and high-level instructions.
 
